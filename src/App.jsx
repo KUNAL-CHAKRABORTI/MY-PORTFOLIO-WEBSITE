@@ -21,6 +21,10 @@ import {
     CheckCircle2,
     Sparkles,
     Send,
+    Phone,
+    MessageCircle,
+    Heart,
+    Zap,
 } from "lucide-react";
 const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
@@ -874,8 +878,156 @@ export default function PortfolioWebsite() {
 
 
             {/* ===== FOOTER ===== */}
-            <footer className="footer-glow relative px-6 py-8 text-center text-sm text-slate-500">
-                <p>&copy; 2026 Kunal Chakraborty. Built with React, Tailwind CSS, and a comeback mindset.</p>
+            <footer className="relative mt-20 border-t border-white/10 bg-slate-950/80 px-6 py-12 backdrop-blur-xl">
+                {/* Glow Background */}
+                <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                    <div className="absolute left-1/4 top-0 h-60 w-60 rounded-full bg-cyan-400/10 blur-3xl animate-pulse" />
+                    <div className="absolute right-1/4 bottom-0 h-60 w-60 rounded-full bg-purple-500/10 blur-3xl animate-pulse" />
+                    {/* Animated line */}
+                    <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+                </div>
+
+                <div className="mx-auto max-w-7xl">
+                    {/* TOP SECTION */}
+                    <div className="grid gap-10 md:grid-cols-3 md:items-start">
+
+                        {/* LEFT - BRAND */}
+                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
+                            <h2 className="text-xl font-black text-white group">
+                                <span className="text-cyan-300 transition-colors duration-300 group-hover:text-cyan-400">Kunal</span>
+                                <span className="text-white">.</span>
+                                <span className="text-cyan-300">dev</span>
+                            </h2>
+                            <p className="mt-3 max-w-sm text-sm text-slate-400 leading-relaxed">
+                                Building real-world MERN stack applications with AI integration. Focused on growth, scalability, and impactful products.
+                            </p>
+                            <div className="mt-4 flex items-center gap-2">
+                                <Heart className="h-4 w-4 text-pink-500 animate-pulse" />
+                                <span className="text-xs text-slate-500">Comeback stronger</span>
+                            </div>
+                        </motion.div>
+
+                        {/* CENTER - QUICK LINKS */}
+                        <motion.div
+                            className="flex flex-col h-full"
+                            initial={{ opacity: 0, y: 15 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.1 }}
+                            viewport={{ once: true }}
+                        >
+                            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                                <Zap className="h-4 w-4" />
+                                Quick Links
+                            </h3>
+
+                            <div className="flex flex-col gap-2 flex-grow">
+                                {[
+                                    { name: "Home", link: "#home" },
+                                    { name: "Projects", link: "#projects" },
+                                    { name: "Skills", link: "#skills" },
+                                    { name: "Contact", link: "#contact" },
+                                ].map((item, i) => (
+                                    <a
+                                        key={i}
+                                        href={item.link}
+                                        className="group relative flex items-center gap-2 text-slate-300 transition hover:text-cyan-300"
+                                    >
+                                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/60" />
+
+                                        <span className="relative">
+                                            {item.name}
+                                            <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-cyan-400 transition-all duration-300 group-hover:w-full" />
+                                        </span>
+                                    </a>
+                                ))}
+                            </div>
+                        </motion.div>
+
+                        {/* RIGHT - CONNECT BUTTONS */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 15 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                            viewport={{ once: true }}
+                        >
+                            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                                <MessageCircle className="h-4 w-4" />
+                                Connect
+                            </h3>
+
+                            <div className="flex flex-col gap-2">
+                                {[
+                                    {
+                                        name: "Call Me",
+                                        href: "tel:+919810245121",
+                                        icon: <Phone className="h-4 w-4 animate-pulse" />,
+                                        style: "green",
+                                    },
+                                    {
+                                        name: "Email Me",
+                                        href: "mailto:kunalchakraborti5@gmail.com",
+                                        icon: <Mail className="h-4 w-4" />,
+                                        style: "cyan",
+                                    },
+                                    {
+                                        name: "WhatsApp",
+                                        href: "https://wa.me/919810245121?text=Hi%20Kunal",
+                                        icon: <MessageCircle className="h-4 w-4" />,
+                                        style: "green-outline",
+                                        external: true,
+                                    },
+                                    {
+                                        name: "LinkedIn",
+                                        href: "https://www.linkedin.com/in/kunal-chakraborti-79b884273",
+                                        icon: <Linkedin className="h-4 w-4" />,
+                                        style: "blue-outline",
+                                        external: true,
+                                    },
+                                ].map((btn, i) => (
+                                    <a
+                                        key={i}
+                                        href={btn.href}
+                                        target={btn.external ? "_blank" : ""}
+                                        rel="noopener noreferrer"
+                                        className={`group flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all
+                                                ${btn.style === "green"
+                                                ? "border border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                                                : btn.style === "cyan"
+                                                    ? "border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20"
+                                                    : btn.style === "green-outline"
+                                                        ? "border border-white/10 text-white hover:border-green-400 hover:text-green-400"
+                                                        : "border border-white/10 text-white hover:border-blue-400 hover:text-blue-400"
+                                            }`}
+                                    >
+                                        {btn.icon}
+                                        {btn.name}
+                                    </a>
+                                ))}
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    {/* BOTTOM */}
+                    <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-slate-500 md:flex-row">
+                        <p className="flex items-center gap-2">
+                            <span>© 2026</span>
+                            <span className="text-slate-600">•</span>
+                            <span className="text-white font-medium">Kunal Chakraborti</span>
+                            <span className="text-slate-600">•</span>
+                            <span>All rights reserved</span>
+                        </p>
+
+                        <p className="flex items-center gap-2 text-cyan-300">
+                            <Sparkles className="h-3 w-3" />
+                            <span>Built with React</span>
+                            <span className="text-slate-600">•</span>
+                            <span>Tailwind</span>
+                            <span className="text-slate-600">•</span>
+                            <span>Passion</span>
+                            <Zap className="h-3 w-3" />
+                        </p>
+                    </div>
+                </div>
             </footer>
         </div>
     );
