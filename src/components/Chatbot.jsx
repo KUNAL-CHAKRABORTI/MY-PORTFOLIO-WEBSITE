@@ -1,169 +1,196 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Send, X, MessageCircle } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Bot, MessageCircle, Send, Sparkles, X } from "lucide-react";
 
-// Kunal.dev assistant — local persona + optional API passthrough
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi — I'm Kunal.dev Assistant. Ask me about Kunal's skills, projects, availability, or contact." },
+    {
+      from: "bot",
+      text: "Hi! I’m Kunal.dev Assistant. Ask me about skills, projects, hiring, or contact.",
+    },
   ]);
+
   const listRef = useRef(null);
 
-  useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, open]);
-
-  const append = (msg) => setMessages((m) => [...m, msg]);
-
-  // Simple rule-based responder using the persona provided
-  const keywords = [
-    "kunal",
-    "skills",
-    "projects",
-    "hire",
-    "contact",
-    "email",
-    "portfolio",
-    "resume",
-    "intern",
-    "freelance",
-    "mern",
-    "ai",
-    "health",
-    "assistant",
-    "erp",
-    "weather",
-    "cgpa",
-    "backend",
-    "frontend",
-    "ui",
-    "ux",
-    "deployment",
-    "vercel",
-    "render",
-    "mongodb",
-    "node",
-    "express",
-    "react",
-    "tailwind",
-    "javascript",
-    "html",
-    "css",
-    "github",
-    "git",
+  const quickQuestions = [
+    "What are Kunal's skills?",
+    "Show projects",
+    "Is Kunal available for internship?",
   ];
 
-  const isRelatedToKunal = (text) => {
-    if (!text || typeof text !== "string") return false;
-    const t = text.toLowerCase();
-    if (t.includes("kunal")) return true;
-    for (const k of keywords) if (t.includes(k)) return true;
-    // common question starters that are likely general — block unless they mention Kunal
-    if ((t.startsWith("who is") || t.startsWith("what is") || t.startsWith("tell me about") || t.startsWith("define")) && !t.includes("kunal")) return false;
-    // default: require at least one keyword
-    return false;
-  };
+  useEffect(() => {
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages, typing, open]);
 
   const localReply = (text) => {
     const t = text.toLowerCase();
+
+    if (t.includes("skill") || t.includes("stack")) {
+      return "Kunal works with React, Tailwind CSS, JavaScript, Node.js, Express.js, MongoDB, GitHub, Vercel, Render, REST APIs, and AI API integration.";
+    }
+
+    if (t.includes("project") || t.includes("erp") || t.includes("health") || t.includes("weather")) {
+      return "Kunal’s main projects are AI Health Assistant, College ERP System, and AI Weather Intelligence Platform.";
+    }
+
+    if (t.includes("hire") || t.includes("intern") || t.includes("contact") || t.includes("email")) {
+      return "Yes, Kunal is open to internships, freelance work, and collaborations. Email: kunalchakraborti5@gmail.com";
+    }
+
     if (t.includes("who") || t.includes("kunal")) {
-      return "Kunal Chakraborti is a BTech Computer Science student and a MERN-stack developer in progress. He builds real-world web projects and integrates AI features.";
+      return "Kunal Chakraborti is a BTech Computer Science student and MERN stack developer in progress, focused on AI-powered web products.";
     }
-    if (t.includes("skills") || t.includes("stack") || t.includes("technologies")) {
-      return "He knows HTML, CSS, JavaScript, React, Tailwind CSS, Node.js, Express.js, MongoDB, Git/GitHub, Vercel, Render, REST APIs, and AI API integration.";
-    }
-    if (t.includes("projects") || t.includes("ai health") || t.includes("erp") || t.includes("weather")) {
-      return "Main projects: AI Health Assistant; College ERP System; AI Weather Intelligence Platform. Focus: scalable features and AI integration.";
-    }
-    if (t.includes("hire") || t.includes("work") || t.includes("intern")) {
-      return "Kunal is open to internships, freelance work, and collaborations. Contact via the contact section or email: kunalchakraborti5@gmail.com.";
-    }
-    if (t.includes("weak") || t.includes("improve") || t.includes("weakness")) {
-      return "He is improving backend depth, production-level architecture, testing, and deployment workflows.";
-    }
-    if (t.includes("goal") || t.includes("future")) {
-      return "Goal: become a strong full-stack developer and build useful AI-powered products.";
-    }
-    return "I can help with Kunal's skills, projects, hiring, or contact. Ask about his portfolio or email.";
+
+    return "I can help you know about Kunal’s skills, projects, experience, availability, and contact details.";
   };
 
-  // If an API endpoint is set, prefer it. Otherwise use localReply.
-  const fetchReply = async (message) => {
-    // Enforce strict persona rules: only handle queries related to Kunal
-    if (!isRelatedToKunal(message)) {
-      return "I’m here to help with Kunal’s portfolio. You can ask about his skills, projects, or experience.";
-    }
+  const sendMessage = (text) => {
+    if (!text.trim()) return;
 
-    const api = process.env.REACT_APP_KUNAL_CHAT_API;
-    if (api) {
-      try {
-        const res = await fetch(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) });
-        if (res.ok) {
-          const data = await res.json();
-          // prefer API reply only if it seems related; otherwise fallback to local
-          const reply = data.reply || data.answer || "";
-          if (isRelatedToKunal(reply)) return reply || localReply(message);
-        }
-      } catch (e) {
-        console.warn("Chat API error:", e);
-      }
-    }
-    return localReply(message);
-  };
+    const userMessage = text.trim();
 
-  const handleSend = async (e) => {
-    e?.preventDefault();
-    if (!input.trim()) return;
-    const text = input.trim();
-    append({ from: "user", text });
+    setMessages((prev) => [...prev, { from: "user", text: userMessage }]);
     setInput("");
-    append({ from: "bot", text: "..." , pending: true});
-    const reply = await fetchReply(text);
-    setMessages((m) => {
-      const withoutPending = m.filter((msg) => !msg.pending);
-      return [...withoutPending, { from: "bot", text: reply }];
-    });
+    setTyping(true);
+
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { from: "bot", text: localReply(userMessage) },
+      ]);
+      setTyping(false);
+    }, 700);
+  };
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    sendMessage(input);
   };
 
   return (
-    <div className={`chatbot fixed bottom-6 right-6 z-50 ${open ? "chatbot-open" : ""}`}>
-      <div className="chatbot-toggle">
-        <button aria-label="toggle chat" onClick={() => setOpen((s) => !s)} className="chat-toggle-btn">
-          {open ? <X className="h-5 w-5 text-white" /> : <MessageCircle className="h-5 w-5 text-white" />}
+    <>
+      {!open && (
+        <button
+          onClick={() => setOpen(true)}
+          className="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-cyan-300 to-blue-500 text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.55)] transition hover:scale-110"
+          aria-label="Open chatbot"
+        >
+          <MessageCircle className="h-6 w-6" />
         </button>
-      </div>
+      )}
 
       {open && (
-        <div className="chatbot-box glass-card neon-border p-3 w-[320px] max-w-[92vw]">
-          <div className="flex items-center justify-between border-b border-white/5 pb-2">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-full bg-neon-cyan/10 grid place-items-center text-neon-cyan">KC</div>
-              <div className="text-sm font-bold">Kunal.dev Assistant</div>
+        <div className="fixed inset-x-3 bottom-4 z-50 mx-auto max-w-[410px] overflow-hidden rounded-[1.7rem] border border-cyan-300/25 bg-slate-950 shadow-[0_0_45px_rgba(34,211,238,0.25)] sm:inset-auto sm:right-5 sm:bottom-5 sm:w-[350px]">
+          <div className="relative overflow-hidden border-b border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-4">
+            <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-cyan-400/20 blur-2xl" />
+
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="relative grid h-11 w-11 place-items-center rounded-2xl bg-cyan-300 text-slate-950 shadow-[0_0_20px_rgba(34,211,238,0.35)]">
+                  <Bot className="h-6 w-6" />
+                  <span className="absolute -right-1 -bottom-1 h-3.5 w-3.5 rounded-full border-2 border-slate-950 bg-green-400" />
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-black text-white">
+                    Kunal.dev Assistant
+                  </h3>
+                  <p className="flex items-center gap-1 text-xs text-cyan-300">
+                    <Sparkles className="h-3 w-3" /> Online now
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-300 transition hover:bg-white/10 hover:text-white"
+                aria-label="Close chatbot"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <button onClick={() => setOpen(false)} aria-label="close" className="text-slate-400 hover:text-white">
-              <X className="h-4 w-4" />
-            </button>
           </div>
 
-          <div ref={listRef} className="chatbot-list mt-3 max-h-64 overflow-y-auto px-1 py-2 text-sm">
-            {messages.map((m, i) => (
-              <div key={i} className={`msg ${m.from === "bot" ? "bot" : "user"} mb-3`}> 
-                <div className="inline-block rounded-xl p-2" style={{ background: m.from === "bot" ? "rgba(255,255,255,0.03)" : "rgba(0,242,255,0.06)", color: m.from === "bot" ? "#cfefff" : "#001219" }}>
-                  {m.text}
+          <div
+            ref={listRef}
+           className="max-h-[42vh] min-h-[190px] space-y-3 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_35%)] px-4 py-3 text-sm sm:max-h-[230px]"
+          >
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex gap-2 ${
+                  msg.from === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                {msg.from === "bot" && (
+                  <div className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-cyan-300 text-slate-950">
+                    <Bot className="h-4 w-4" />
+                  </div>
+                )}
+
+                <div
+                  className={`max-w-[82%] rounded-2xl px-4 py-3 leading-6 shadow-sm ${
+                    msg.from === "user"
+                      ? "rounded-br-md bg-cyan-300 text-slate-950"
+                      : "rounded-bl-md border border-white/10 bg-white/7 text-slate-200"
+                  }`}
+                >
+                  {msg.text}
                 </div>
               </div>
             ))}
+
+            {typing && (
+              <div className="flex items-center gap-2">
+                <div className="grid h-7 w-7 place-items-center rounded-full bg-cyan-300 text-slate-950">
+                  <Bot className="h-4 w-4" />
+                </div>
+                <div className="flex gap-1 rounded-2xl rounded-bl-md border border-white/10 bg-white/5 px-4 py-3">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-300" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-300 [animation-delay:0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-300 [animation-delay:0.3s]" />
+                </div>
+              </div>
+            )}
           </div>
 
-          <form onSubmit={handleSend} className="mt-2 flex gap-2">
-            <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about Kunal..." className="flex-1 rounded-xl border border-white/10 bg-white/3 px-3 py-2 text-sm outline-none text-white placeholder-slate-400" />
-            <button type="submit" className="btn-glow px-3 py-2 text-sm"><Send className="h-4 w-4" /></button>
-          </form>
+          <div className="border-t border-white/10 bg-slate-950/95 px-3 py-3">
+            <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+              {quickQuestions.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => sendMessage(q)}
+                  className="shrink-0 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-300 hover:text-slate-950"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
 
-          <div className="mt-2 text-xs text-slate-400">Tip: This assistant uses a local persona. To enable remote AI replies, set `REACT_APP_KUNAL_CHAT_API` in your environment.</div>
+            <form onSubmit={handleSend} className="flex gap-2">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about Kunal..."
+                className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-300/60"
+              />
+
+              <button
+                type="submit"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-cyan-300 text-slate-950 transition hover:bg-white"
+                aria-label="Send message"
+              >
+                <Send className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

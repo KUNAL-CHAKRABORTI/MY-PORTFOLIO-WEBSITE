@@ -46,11 +46,27 @@ export default function PortfolioWebsite() {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Feedback submitted:", formData);
-        setSubmitted(true);
-        setFormData({ name: "", email: "", message: "" });
+
+        try {
+            const response = await fetch("https://formspree.io/f/mlgzdeeb", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                setSubmitted(true);
+                setFormData({ name: "", email: "", message: "" });
+            } else {
+                alert("Failed to send feedback.");
+            }
+        } catch (error) {
+            alert("Something went wrong.");
+        }
     };
 
     useEffect(() => {
@@ -104,6 +120,7 @@ export default function PortfolioWebsite() {
             desc: "An AI-powered assistant that provides basic health guidance, symptom-based suggestions, and future scope for tracking and personalization.",
             tech: ["React", "AI API", "JavaScript", "Tailwind"],
             status: "Live / In Progress",
+            link: "https://ai-integrated-health-assistant-app.vercel.app",
         },
         {
             name: "College ERP System",
@@ -111,6 +128,7 @@ export default function PortfolioWebsite() {
             desc: "A scalable college ERP concept for students, admins, accounts, attendance, smart AI tools, resume analysis, CGPA calculator, and dashboards.",
             tech: ["MongoDB", "Express", "React", "Node", "JWT"],
             status: "Building",
+            link: "https://example.com",
         },
         {
             desc: "A modern weather platform with dashboard UI, API integration, forecast cards, smart highlights, and premium glassmorphism design.",
@@ -118,6 +136,7 @@ export default function PortfolioWebsite() {
             type: "API-Based Project",
             tech: ["React", "Weather API", "Tailwind", "Vite"],
             status: "Deployed / Improving",
+            link: "https://ai-powered-weather-app-ldu5-dusky.vercel.app/",
         },
     ];
 
@@ -227,7 +246,12 @@ export default function PortfolioWebsite() {
                         >
                             Share
                         </button>
-                        <a href="#contact" className="btn-glow text-sm">Hire Me</a>
+                        <a
+                            href="mailto:kunalchakraborti5@gmail.com"
+                            className="btn-glow text-sm"
+                        >
+                            Hire Me
+                        </a>
                     </div>
 
                     <button
@@ -245,19 +269,38 @@ export default function PortfolioWebsite() {
                                 {item}
                             </a>
                         ))}
+
                         <button
-                            onClick={() => {
-                                if (navigator.share) {
-                                    navigator.share({ title: "Kunal.dev Portfolio", text: "Check out Kunal's MERN Stack Developer Portfolio", url: window.location.href });
-                                } else {
-                                    navigator.clipboard.writeText(window.location.href);
-                                    alert("Portfolio link copied!");
+                            onClick={async () => {
+                                const shareData = {
+                                    title: "Kunal.dev Portfolio",
+                                    text: "Check out Kunal's MERN Stack Developer Portfolio 🚀",
+                                    url: window.location.href,
+                                };
+
+                                try {
+                                    if (navigator.share) {
+                                        await navigator.share(shareData);
+                                    } else {
+                                        await navigator.clipboard.writeText(window.location.href);
+                                        alert("Portfolio link copied!");
+                                    }
+
+                                    setMenuOpen(false);
+                                } catch (error) {
+                                    console.log("Share cancelled or failed:", error);
                                 }
                             }}
                             className="btn-glow mt-4 w-full justify-center text-sm"
                         >
                             Share Portfolio
                         </button>
+                        <a
+                            href="mailto:kunalchakraborti5@gmail.com"
+                            className="mt-3 flex w-full items-center justify-center rounded-xl border border-neon-cyan/40 bg-neon-cyan/10 px-5 py-3 text-sm font-bold text-neon-cyan shadow-[0_0_10px_rgba(0,242,255,0.2)] transition hover:bg-neon-cyan hover:text-dark-bg hover:shadow-[0_0_20px_rgba(0,242,255,0.5)]"
+                        >
+                            Hire Me
+                        </a>
                     </motion.div>
                 )}
             </header>
@@ -299,7 +342,6 @@ export default function PortfolioWebsite() {
                                 Download Resume
                                 <Download className="h-5 w-5" />
                             </a>
-
                         </div>
                     </motion.div>
 
@@ -325,7 +367,11 @@ export default function PortfolioWebsite() {
                     </motion.div>
                 </section>
 
-                <div className="section-divider" />
+                <div className="section-divider relative overflow-hidden h-[1px] bg-white/10">
+                    <span className="absolute inset-0 bg-neon-cyan/30"></span>
+
+                    <span className="absolute top-0 left-[-50%] h-full w-1/2 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-divider-sweep"></span>
+                </div>
 
                 {/* ===== ABOUT ===== */}
                 <section id="about" className="section-container py-20 md:py-28">
@@ -348,7 +394,11 @@ export default function PortfolioWebsite() {
                     </motion.div>
                 </section>
 
-                <div className="section-divider" />
+                <div className="section-divider relative overflow-hidden h-[1px] bg-white/10">
+                    <span className="absolute inset-0 bg-neon-cyan/30"></span>
+
+                    <span className="absolute top-0 left-[-50%] h-full w-1/2 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-divider-sweep"></span>
+                </div>
 
                 {/* ===== SKILLS ===== */}
                 <section id="skills" className="section-container py-20 md:py-28">
@@ -358,26 +408,88 @@ export default function PortfolioWebsite() {
                             My Development Stack
                         </h2>
                     </motion.div>
-                    <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {skills.map((skill) => (
-                            <motion.div variants={fadeInUp} key={skill.title} className="glass-card neon-border glow-hover rounded-3xl p-6">
-                                <div className="mb-5 inline-flex rounded-2xl bg-neon-cyan/10 p-3 text-neon-cyan shadow-neon-cyan-sm">
-                                    {skill.icon}
-                                </div>
-                                <h3 className="mb-4 text-lg font-black sm:text-xl">{skill.title}</h3>
-                                <div className="space-y-3">
-                                    {skill.items.map((item) => (
-                                        <p key={item} className="flex items-center gap-2 text-sm text-slate-400">
-                                            <CheckCircle2 className="h-4 w-4 text-neon-cyan" /> {item}
-                                        </p>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        ))}
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-50px" }}
+                        className="relative mx-auto max-w-4xl"
+                    >
+                        {/* soft background glow */}
+                        <div className="absolute inset-0 -z-10 rounded-[2rem] bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.12),transparent_55%)]" />
+
+                        {/* center line */}
+                        <div className="absolute left-1/2 top-3 hidden h-[calc(100%-1.5rem)] w-[1.5px] -translate-x-1/2 bg-gradient-to-b from-transparent via-neon-cyan/70 to-transparent lg:block" />
+
+                        <div className="space-y-3">
+                            {skills.map((skill, index) => (
+                                <motion.div
+                                    variants={fadeInUp}
+                                    key={skill.title}
+                                    className={`relative flex items-center ${index % 2 === 0 ? "lg:justify-start" : "lg:justify-end"
+                                        }`}
+                                >
+                                    {/* node */}
+                                    <div className="absolute left-1/2 top-1/2 z-10 hidden h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-neon-cyan bg-slate-950 shadow-[0_0_18px_rgba(34,211,238,0.7)] lg:block">
+                                        <div className="absolute inset-1 rounded-full bg-neon-cyan/80" />
+                                    </div>
+
+                                    {/* connector */}
+                                    <div
+                                        className={`absolute top-1/2 hidden h-[1.5px] w-14 -translate-y-1/2 
+                                                ${index % 2 === 0
+                                                ? "left-1/2 -translate-x-full bg-gradient-to-r from-transparent to-neon-cyan/80"
+                                                : "left-1/2 bg-gradient-to-r from-neon-cyan/80 to-transparent"
+                                            } lg:block`}
+                                    />
+
+                                    {/* card */}
+                                    <div className="group relative w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 p-3.5 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-neon-cyan/40 hover:shadow-[0_0_35px_rgba(34,211,238,0.18)] sm:w-[350px]">
+
+                                        {/* top shine */}
+                                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon-cyan/70 to-transparent" />
+
+                                        {/* corner glow */}
+                                        <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-neon-cyan/10 blur-2xl transition-all duration-300 group-hover:bg-neon-cyan/20" />
+
+                                        <div className="relative mb-2 flex items-center gap-3">
+                                            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-neon-cyan/20 bg-neon-cyan/10 text-neon-cyan shadow-[0_0_18px_rgba(34,211,238,0.18)]">
+                                                {skill.icon}
+                                            </div>
+
+                                            <div>
+                                                <h3 className="text-sm font-black tracking-wide text-white sm:text-base">
+                                                    {skill.title}
+                                                </h3>
+                                                <p className="text-[10px] uppercase tracking-[0.25em] text-neon-cyan/70">
+                                                    Stack Module
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="relative space-y-1">
+                                            {skill.items.slice(0, 2).map((item) => (
+                                                <p
+                                                    key={item}
+                                                    className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/[0.03] px-2 py-1 text-[11px] text-slate-300"
+                                                >
+                                                    <CheckCircle2 className="h-3 w-3 shrink-0 text-neon-cyan" />
+                                                    {item}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
                     </motion.div>
                 </section>
 
-                <div className="section-divider" />
+                <div className="section-divider relative overflow-hidden h-[1px] bg-white/10">
+                    <span className="absolute inset-0 bg-neon-cyan/30"></span>
+
+                    <span className="absolute top-0 left-[-50%] h-full w-1/2 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-divider-sweep"></span>
+                </div>
 
                 {/* ===== PROJECTS ===== */}
                 <section id="projects" className="section-container py-20 md:py-28">
@@ -398,7 +510,14 @@ export default function PortfolioWebsite() {
                                     <span className="rounded-full bg-neon-purple/10 px-3 py-1 text-xs font-bold text-neon-purple border border-neon-purple/20 shadow-neon-purple">
                                         {project.type}
                                     </span>
-                                    <ExternalLink className="h-5 w-5 text-slate-500 transition group-hover:text-neon-cyan group-hover:drop-shadow-[0_0_5px_rgba(0,242,255,0.4)]" />
+                                    <a
+                                        href={project.link || "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`Open ${project.name}`}
+                                    >
+                                        <ExternalLink className="h-5 w-5 text-slate-500 transition hover:text-neon-cyan hover:drop-shadow-[0_0_5px_rgba(0,242,255,0.4)]" />
+                                    </a>
                                 </div>
                                 <h3 className="mb-4 text-xl font-black sm:text-2xl group-hover:text-glow transition">
                                     {project.name}
@@ -415,7 +534,11 @@ export default function PortfolioWebsite() {
                     </motion.div>
                 </section>
 
-                <div className="section-divider" />
+                <div className="section-divider relative overflow-hidden h-[1px] bg-white/10">
+                    <span className="absolute inset-0 bg-neon-cyan/30"></span>
+
+                    <span className="absolute top-0 left-[-50%] h-full w-1/2 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-divider-sweep"></span>
+                </div>
 
                 {/* ===== JOURNEY ===== */}
                 <section id="journey" className="section-container py-20 md:py-28">
@@ -492,7 +615,11 @@ export default function PortfolioWebsite() {
                     </motion.div>
                 </section>
 
-                <div className="section-divider" />
+                <div className="section-divider relative overflow-hidden h-[1px] bg-white/10">
+                    <span className="absolute inset-0 bg-neon-cyan/30"></span>
+
+                    <span className="absolute top-0 left-[-50%] h-full w-1/2 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-divider-sweep"></span>
+                </div>
 
                 {/* ===== CERTIFICATIONS ===== */}
                 <section id="certifications" className="section-container py-20 md:py-28">
@@ -567,118 +694,177 @@ export default function PortfolioWebsite() {
                     </motion.div>
                 </section>
 
-                <div className="section-divider" />
+                <div className="section-divider relative overflow-hidden h-[1px] bg-white/10">
+                    <span className="absolute inset-0 bg-neon-cyan/30"></span>
+
+                    <span className="absolute top-0 left-[-50%] h-full w-1/2 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-divider-sweep"></span>
+                </div>
 
                 {/* ===== CONTACT ===== */}
-                <section id="contact" className="section-container py-20 md:py-28 text-center">
-                    <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}>
-                        <div className="mx-auto max-w-4xl">
-                            <div className="neon-border-wrapper">
-                                <div className="neon-box-content p-8 sm:p-12 md:p-16">
-                                    <GraduationCap className="mx-auto mb-6 h-12 w-12 text-neon-cyan drop-shadow-[0_0_10px_rgba(0,242,255,0.4)]" />
-                                    <h2 className="text-3xl font-black sm:text-4xl md:text-5xl text-glow">
-                                        Let's build something meaningful.
-                                    </h2>
-                                    <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-400 sm:text-lg">
-                                        I'm open to internships, freelance work, collaborations, and real-world MERN stack projects.
-                                    </p>
-                                    <div className="mt-8 flex flex-wrap justify-center gap-4">
-                                        <a href="mailto:kunalchakraborti5@gmail.com" className="btn-glow">
-                                            <Mail className="h-5 w-5" /> Email Me
-                                        </a>
-                                        <a href="#" className="btn-outline-glow">
-                                            <Github className="h-5 w-5" /> GitHub
-                                        </a>
-                                        <a href="#" className="btn-outline-glow">
-                                            <Linkedin className="h-5 w-5" /> LinkedIn
-                                        </a>
+                <section id="contact" className="section-container py-16 md:py-24">
+                    <motion.div
+                        variants={fadeInUp}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="mx-auto max-w-5xl"
+                    >
+                        <div className="relative overflow-hidden rounded-[2rem] border border-cyan-400/20 bg-white/[0.05] p-6 shadow-[0_0_45px_rgba(0,242,255,0.10)] backdrop-blur-xl md:p-8 lg:p-10">
+                            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
+                            <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl" />
+
+                            <div className="relative z-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+                                {/* LEFT SIDE */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -35 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.7 }}
+                                    viewport={{ once: true }}
+                                    className="lg:pr-8"
+                                >
+                                    <div className="mb-5 inline-flex rounded-2xl bg-cyan-400/10 p-4 text-neon-cyan">
+                                        <GraduationCap className="h-9 w-9" />
                                     </div>
 
-                                    {/* Feedback Form */}
-                                    <div className="mt-12 text-left">
-                                        <div className="glass-card neon-border rounded-2xl p-6 sm:p-8">
-                                            <h3 className="mb-6 text-center text-xl font-bold text-white text-glow">
-                                                Send Feedback
-                                            </h3>
-                                            {submitted ? (
-                                                <motion.div
-                                                    initial={{ opacity: 0, scale: 0.9 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    className="flex flex-col items-center justify-center gap-4 py-8 text-center"
-                                                >
-                                                    <CheckCircle2 className="h-12 w-12 text-neon-cyan drop-shadow-[0_0_10px_rgba(0,242,255,0.4)]" />
-                                                    <p className="text-lg font-semibold text-white">Thank you for your feedback!</p>
-                                                    <p className="text-sm text-slate-400">I'll get back to you soon.</p>
-                                                    <button
-                                                        onClick={() => setSubmitted(false)}
-                                                        className="btn-outline-glow mt-2 text-sm"
-                                                    >
-                                                        Send another message
-                                                    </button>
-                                                </motion.div>
-                                            ) : (
-                                                <motion.form
-                                                    variants={staggerContainer}
-                                                    initial="hidden"
-                                                    animate="visible"
-                                                    onSubmit={handleSubmit}
-                                                    className="space-y-5"
-                                                >
-                                                    <motion.div variants={fadeInUp}>
-                                                        <label htmlFor="name" className="mb-2 block text-sm font-bold text-slate-300">
-                                                            Name
-                                                        </label>
-                                                        <input
-                                                            id="name"
-                                                            name="name"
-                                                            type="text"
-                                                            required
-                                                            value={formData.name}
-                                                            onChange={handleChange}
-                                                            placeholder="Your name"
-                                                            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/30"
-                                                        />
-                                                    </motion.div>
-                                                    <motion.div variants={fadeInUp}>
-                                                        <label htmlFor="email" className="mb-2 block text-sm font-bold text-slate-300">
-                                                            Email
-                                                        </label>
-                                                        <input
-                                                            id="email"
-                                                            name="email"
-                                                            type="email"
-                                                            required
-                                                            value={formData.email}
-                                                            onChange={handleChange}
-                                                            placeholder="you@example.com"
-                                                            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/30"
-                                                        />
-                                                    </motion.div>
-                                                    <motion.div variants={fadeInUp}>
-                                                        <label htmlFor="message" className="mb-2 block text-sm font-bold text-slate-300">
-                                                            Message
-                                                        </label>
-                                                        <textarea
-                                                            id="message"
-                                                            name="message"
-                                                            required
-                                                            rows={4}
-                                                            value={formData.message}
-                                                            onChange={handleChange}
-                                                            placeholder="Your message..."
-                                                            className="w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/30 min-h-[120px]"
-                                                        />
-                                                    </motion.div>
-                                                    <motion.div variants={fadeInUp}>
-                                                        <button type="submit" className="btn-glow w-full justify-center">
-                                                            <Send className="h-5 w-5" /> Send Message
-                                                        </button>
-                                                    </motion.div>
-                                                </motion.form>
-                                            )}
+                                    <p className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-neon-cyan">
+                                        Contact Me
+                                    </p>
+
+                                    <h2 className="text-3xl font-black leading-tight text-white sm:text-4xl lg:text-5xl">
+                                        Let’s build something
+                                        <span className="block bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">
+                                            meaningful.
+                                        </span>
+                                    </h2>
+
+                                    <p className="mt-5 max-w-xl text-base leading-7 text-slate-300">
+                                        I’m open to internships, freelance work, collaborations, and real-world MERN stack projects.
+                                    </p>
+
+                                    <div className="mt-7 space-y-4">
+                                        <a
+                                            href="mailto:kunalchakraborti5@gmail.com"
+                                            className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/40 p-4 transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
+                                        >
+                                            <span className="rounded-xl bg-cyan-400/10 p-3 text-neon-cyan">
+                                                <Mail className="h-5 w-5" />
+                                            </span>
+                                            <div>
+                                                <p className="text-xs text-slate-400">Email</p>
+                                                <p className="text-sm font-bold text-white group-hover:text-cyan-300 sm:text-base">
+                                                    kunalchakraborti5@gmail.com
+                                                </p>
+                                            </div>
+                                        </a>
+
+                                        <div className="grid gap-3 sm:grid-cols-2">
+                                            <a
+                                                href="https://github.com/KUNAL-CHAKRABORTI"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-slate-950/40 px-5 py-4 font-bold text-white transition hover:border-cyan-300/50 hover:bg-white/10"
+                                            >
+                                                <Github className="h-5 w-5" /> GitHub
+                                            </a>
+                                            <a
+                                                href="https://www.linkedin.com/in/kunal-chakraborti-79b884273"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-slate-950/40 px-5 py-4 font-bold text-white transition hover:border-cyan-300/50 hover:bg-white/10"
+                                            >
+                                                <Linkedin className="h-5 w-5" /> LinkedIn
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
+
+                                {/* RIGHT SIDE */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: 35 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.7, delay: 0.15 }}
+                                    viewport={{ once: true }}
+                                    className="rounded-[1.5rem] border border-white/10 bg-slate-950/45 p-5 sm:p-6"
+                                >
+                                    <div className="mb-6">
+                                        <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-neon-cyan">
+                                            Feedback
+                                        </p>
+                                        <h3 className="text-2xl font-black text-white">
+                                            Send me a message
+                                        </h3>
+                                    </div>
+
+                                    {submitted ? (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="flex min-h-[300px] flex-col items-center justify-center gap-4 text-center"
+                                        >
+                                            <CheckCircle2 className="h-12 w-12 text-neon-cyan" />
+                                            <p className="text-xl font-black text-white">Thank you!</p>
+                                            <p className="text-sm text-slate-400">Your message has been received.</p>
+                                            <button
+                                                onClick={() => setSubmitted(false)}
+                                                className="mt-2 rounded-full border border-cyan-300/30 px-5 py-3 font-bold text-cyan-300 transition hover:bg-cyan-300/10"
+                                            >
+                                                Send another message
+                                            </button>
+                                        </motion.div>
+                                    ) : (
+                                        <motion.form
+                                            variants={staggerContainer}
+                                            initial="hidden"
+                                            whileInView="visible"
+                                            viewport={{ once: true }}
+                                            onSubmit={handleSubmit}
+                                            className="space-y-4"
+                                        >
+                                            <motion.input
+                                                variants={fadeInUp}
+                                                name="name"
+                                                type="text"
+                                                required
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                placeholder="Your name"
+                                                className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-300/60"
+                                            />
+
+                                            <motion.input
+                                                variants={fadeInUp}
+                                                name="email"
+                                                type="email"
+                                                required
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                placeholder="Your email"
+                                                className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-300/60"
+                                            />
+
+                                            <motion.textarea
+                                                variants={fadeInUp}
+                                                name="message"
+                                                required
+                                                rows={4}
+                                                value={formData.message}
+                                                onChange={handleChange}
+                                                placeholder="Write your message..."
+                                                className="min-h-[120px] w-full resize-y rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-300/60"
+                                            />
+
+                                            <motion.button
+                                                variants={fadeInUp}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                type="submit"
+                                                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-6 py-4 font-black text-slate-950 transition hover:bg-white"
+                                            >
+                                                <Send className="h-5 w-5" /> Send Message
+                                            </motion.button>
+                                        </motion.form>
+                                    )}
+                                </motion.div>
                             </div>
                         </div>
                     </motion.div>

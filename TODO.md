@@ -1,13 +1,17 @@
-# Portfolio Premium Upgrade - Task List
+# Chatbot Upgrade TODO
 
-- [x] Read and analyze all existing files
-- [x] Update `index.html` title
-- [x] Update `tailwind.config.cjs` with custom neon theme extensions
-- [x] Rewrite `src/index.css` with premium neon animations, keyframes, and reusable classes
-- [x] Rewrite `src/App.jsx` with premium styling, neon borders, glassmorphism, responsive fixes
-- [x] Test build and verify no broken React code
-- [x] Add feedback form in Contact section
-  - [x] Add `Send` icon import from lucide-react
-  - [x] Add form state and handlers
-  - [x] Add form UI inside Contact section
+## Backend Setup
+- [x] Create `chatbot-api/` directory
+- [x] Create `chatbot-api/package.json`
+- [x] Create `chatbot-api/server.js`
+- [x] Create `chatbot-api/.env` (placeholder)
+- [x] Create `chatbot-api/.gitignore`
+- [x] Run `cd chatbot-api && npm install`
+- [x] Add real `OPENAI_API_KEY`
+- [x] Start backend: `node chatbot-api/server.js`
+
+## Frontend Updates
+- [x] Create frontend `.env` with `VITE_KUNAL_CHAT_API`
+- [x] Update `src/components/Chatbot.jsx` to call backend API
+- [x] Test chatbot integration
 
